@@ -22,7 +22,7 @@ def makeServerConn():
 		while checkInput:
 		input = raw_input()
 		
-		if input[:2]=="ls" || input[:2] == "cd" || input[:6] == "delete" || input[:4] == "read" || input[:5] == "mkdir":
+		if input[:2]=="ls" or input[:2] == "cd" or input[:6] == "delete" or input[:4] == "read" or input[:5] == "mkdir":
 			checkInput = False
 		else:
 			print "Please Input valid command"
