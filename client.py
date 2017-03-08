@@ -6,40 +6,35 @@ import signal
 from Queue import Queue
 from threading import Thread
 
-portNum = sys.argv[1]
-IP = socket.gethostbyname(socket.gethostname())
-acceptableInstructions = ["ls", "cd","delete","read","write","stop","mkdir"]
+
+
+def _initialise(hostAddress,portNum):
+	global newSock
+	newSock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+	newSock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
+	newSock.connect((hostAddress,portNum))
+	makeServerConn()
+
 
 def makeServerConn():
 	isActive = True
 	checkInput = True
-	newSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	serverAddress = ("localhost", portNum)
-	newSock.connect(serverAddress)
 
 	while isActive:
-
 		while checkInput:
-		input = raw_input()
+			input = raw_input()
 		
-		if input[:2]=="ls" or input[:2] == "cd" or input[:6] == "delete" or input[:4] == "read" or input[:5] == "mkdir":
-			checkInput = False
-		else:
-			print "Please Input valid command"
-		
-		elif input[:4] == "stop":
-			socket.write("KILL_SERVICE\n")
-			isActive = False
+			if input[:2]=="ls" or input[:2] == "cd" or input[:6] == "delete" or input[:4] == "read" or input[:5] == "write" or input[:5] == "mkdir" or input[:4] == "stop":
+				print "input detected"
 
-		elif input[:5] == "write":
-			splitString=input.split(" ")
-			file = open(splitString[1])
-			openFile = file.read()
-			return openFile
+				newSock.send(input)
+			else:
+				print "Please Input valid command"
 	newSock.close()
 
 	
-
+if __name__ == '__main__':
+	_initialise(sys.argv[1],int(sys.argv[2]))
 
 
 
