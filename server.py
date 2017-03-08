@@ -8,6 +8,7 @@ import subprocess
 import shutil
 from Queue import Queue
 from threading import Thread
+from cache import cacheClass
 
 
 def _initialise(hostAddress,portNum):
@@ -50,15 +51,11 @@ def _dealWithClient(conn, address):
 			dir_path = os.path.dirname(os.path.realpath(__file__))
 			print dir_path
 
-			#subprocess.check_output(['ls','-l']) #all that is technically needed...
 			print subprocess.check_output(['ls','-l'])
 
-			#os.listdir(dir_path)
 		elif splitString[0] == "cd":
 			print "CD here"
 			
-			#subprocess.check_output(['cd', splitString[1]])
-			#print subprocess.check_output(['ls','-l'])
 
 			dir_path = os.path.dirname(os.path.realpath(__file__))
 			print dir_path
@@ -74,8 +71,16 @@ def _dealWithClient(conn, address):
 			
 		elif message[:5]== "write":
 			print "write"
-			file = open(fileContents + splitString[1], "w")
+			file = open(splitString[1], "w")
 			file.write(splitString[2])
+
+			dir_path = os.path.dirname(os.path.realpath(__file__))
+
+			if cacheClass.isFileInCache == False and cacheClass.isCacheFull == False:
+				cacheClass.addFileToCache(dir_path, fileContents)
+			elif cacheClass.isCacheFull == True:
+				cacheClass.delFromCache()
+				cacheClass.addFileToCache(dir_path, fileContents)
 			file.close()
 			
 			
@@ -84,6 +89,14 @@ def _dealWithClient(conn, address):
 			file = open(splitString[1])
 			fileContents = file.read()
 			print "%s" % (fileContents)
+			dir_path = os.path.dirname(os.path.realpath(__file__))
+			if cacheClass.isFileInCache == False and cacheClass.isCacheFull == False:
+				acheClass.addFileToCache(dir_path, fileContents)
+			elif isCacheFull == True:
+				cacheClass.delFromCache()
+				cacheClass.addFileToCache(dir_path, fileContents)
+					
+
 			
 		elif message[:5]== "mkdir":
 
